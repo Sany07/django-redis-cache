@@ -1,15 +1,8 @@
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
-
+from django.http import HttpResponse
 from .models import BookList
-
-from django.conf import settings
-from django.core.cache.backends.base import DEFAULT_TIMEOUT
-
-
-CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
 @cache_page(60 * 15) # 60 sec * 15 min
 def index(request):
@@ -29,3 +22,15 @@ def book(request,id):
         'book':book
     }
     return render(request,'book.html',context)
+
+def search(request):
+    searchText = request.GET.get('text')
+    if cache.get(searchText):
+        books = cache.get(searchText)
+    else:
+        books = BookList.objects.filter(name__icontains = searchText ) | BookList.objects.filter(desc__icontains = searchText)
+        cache.set(searchText,books , 60 * 15)
+    context={
+        'books':books
+    }
+    return render(request,'search.html',context)
