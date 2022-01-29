@@ -126,7 +126,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-CACHE_TTL = 60 * 1500
+
 
 CACHES = {
     "default": {

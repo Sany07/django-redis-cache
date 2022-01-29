@@ -11,7 +11,7 @@ from django.core.cache.backends.base import DEFAULT_TIMEOUT
 
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
-@cache_page(60 * 15)
+@cache_page(60 * 15) # 60 sec * 15 min
 def index(request):
     books = BookList.objects.all()
     context = {
@@ -24,7 +24,7 @@ def book(request,id):
         book = cache.get(id)
     else:
         book = get_object_or_404(BookList,id = id)
-        cache.set(id,book )
+        cache.set(id,book , 60 * 15)
     context = {
         'book':book
     }
